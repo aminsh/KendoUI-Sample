@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <style scoped>
+            #example {
+                text-align: center;
+            }
+
+            .demo-section {
+                display: inline-block;
+                vertical-align: top;
+                width: 220px;
+                text-align: left;
+                margin: 0 2em;
+            }
+        </style>
+
+        <title></title>
+        <script src="../Scripts/jquery-2.1.1.min.js"></script>
+        <script src="../Scripts/kendo/jquery.min.js"></script>
+        <script src="../Scripts/kendo/kendo.all.min.js"></script> 
+        
+        <link href="../Content/kendo/kendo.common.min.css" rel="stylesheet" />
+        <link href="../Content/kendo/kendo.bootstrap.min.css" rel="stylesheet" />
+        <!--<link href="Content/kendo/kendo.metro.min.css" rel="stylesheet" />-->
+       <!-- <link href="Content/kendo/kendo.default.min.css" rel="stylesheet" />-->
+    </head>
+<body>
+    <script>
+        $(function() {
+            var inlineDefault = new kendo.data.HierarchicalDataSource({
+                data: [
+                    {
+                        text: "Furniture", items: [
+                            { text: "Tables & Chairs" },
+                            { text: "Sofas" },
+                            { text: "Occasional Furniture" }
+                        ]
+                    },
+                    {
+                        text: "Decor", items: [
+                            { text: "Bed Linen" },
+                            { text: "Curtains & Blinds" },
+                            { text: "Carpets" }
+                        ]
+                    }
+                ]
+            });
+
+            $("#treeview-left").kendoTreeView({
+                dataSource: inlineDefault
+            });
+
+            var homogeneous = new kendo.data.HierarchicalDataSource({
+                transport: {
+                    read: {
+                        url: "/api/City/Cities",
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "Id",
+                        hasChildren: "HasChildren"
+                    }
+                }
+            });
+
+           var remoteTree = $("#treeview").kendoTreeView({
+                dataSource: homogeneous,
+                dataTextField: "Name",
+                select: function (e) {
+                    var city = remoteTree.dataItem(e.node);
+                    console.info(city);
+                    $('#selectResult').append('<li>'+ city.Id + ' --- ' + city.Name +'</li>');
+                }
+           }).data("kendoTreeView");
+           
+        });
+    </script>
+    <div class="demo-section k-header">
+        <h4>Inline data (default settings)</h4>
+        <div id="treeview-left"></div>
+    </div>
+    <hr/>
+    <div class="demo-section k-header">
+        <h4>Remote data</h4>
+        <div id="treeview"></div>
+        <hr/>
+        Entire object will be written on console
+
+        <ul id="selectResult"></ul>
+    </div>
+</body>
+</html>
